@@ -10,14 +10,23 @@ import hashlib
 import secrets
 import urllib.parse
 import os
+import shutil
 from datetime import datetime
+
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BUNDLED_DB = os.path.join(ROOT_DIR, "pos_database.db")
 
 # On Vercel, the only writable directory is /tmp
 if os.environ.get("VERCEL"):
     DB_PATH = "/tmp/pos_database.db"
+    # Seed /tmp database from bundled repository database if present
+    if not os.path.exists(DB_PATH) and os.path.exists(BUNDLED_DB):
+        try:
+            shutil.copyfile(BUNDLED_DB, DB_PATH)
+        except Exception:
+            pass
 else:
-    ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    DB_PATH = os.path.join(ROOT_DIR, "pos_database.db")
+    DB_PATH = BUNDLED_DB
 
 # =========================================================================
 # SQLite Database Layer
@@ -181,6 +190,60 @@ def init_db():
                 "Software By Heath-Tech Cell # 0311-5505115",
                 "Goods once sold cannot be returned without receipt."
             ))
+
+        # Ensure shaheer account exists
+        cursor.execute("SELECT id FROM users WHERE username = 'shaheer'")
+        if not cursor.fetchone():
+            cursor.execute(
+                "INSERT INTO users (username, password_hash) VALUES (?, ?)",
+                ("shaheer", hash_password("123"))
+            )
+            shaheer_id = cursor.lastrowid
+            cursor.execute("""
+                INSERT INTO store_profiles (
+                    user_id, store_name, address, dsl_no, ntn_no, cell_no, cashier_name, counter_no, software_credit, return_policy
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                shaheer_id,
+                "AL-HAFIZ MEDICAL STORE",
+                "Shop#1, Block I-1, Mughal Market",
+                "DHO-ISB-1108",
+                "",
+                "0336-5677108",
+                "Uzair Kiyani",
+                "02",
+                "Software By Heath-Tech Cell # 0311-5505115",
+                "No Return or Exchange After 3 Days."
+            ))
+            sample_state_shaheer = {
+                "store": {
+                    "name": "AL-HAFIZ MEDICAL STORE",
+                    "address": "Shop#1, Block I-1, Mughal Market",
+                    "dslNo": "DHO-ISB-1108",
+                    "cellNo": "0336-5677108",
+                    "softwareCredit": "Software By Heath-Tech Cell # 0311-5505115"
+                },
+                "bill": {
+                    "paymentId": "AD-152861",
+                    "billNo": "34260",
+                    "date": "28/10/2026 11:51:46 PM",
+                    "user": "Uzair Kiyani",
+                    "counter": "02"
+                },
+                "items": [
+                    {"name": "GETRYL 2MG", "quantity": 30, "price": 6.86},
+                    {"name": "CONCOR 5MG", "quantity": 28, "price": 22.92},
+                    {"name": "XENGLU-MET 12.5/500MG", "quantity": 28, "price": 32.14},
+                    {"name": "XULTOPHY (100/3.6) INJ 3ML", "quantity": 1, "price": 10148.00}
+                ],
+                "discount": 0.00,
+                "cashReceived": 12000.00,
+                "policy": "No Return or Exchange After 3 Days."
+            }
+            cursor.execute("""
+                INSERT INTO bills (user_id, bill_no, payment_id, bill_date, items_count, gross_total, bill_state_json)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (shaheer_id, "34260", "AD-152861", "28/10/2026 11:51:46 PM", 4, 11895.48, json.dumps(sample_state_shaheer)))
 
         conn.commit()
 

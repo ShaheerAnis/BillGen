@@ -186,6 +186,31 @@ def init_db():
                 "Goods once sold cannot be returned without receipt."
             ))
 
+        # Ensure shaheer account exists
+        cursor.execute("SELECT id FROM users WHERE username = 'shaheer'")
+        if not cursor.fetchone():
+            cursor.execute(
+                "INSERT INTO users (username, password_hash) VALUES (?, ?)",
+                ("shaheer", hash_password("123"))
+            )
+            shaheer_id = cursor.lastrowid
+            cursor.execute("""
+                INSERT INTO store_profiles (
+                    user_id, store_name, address, dsl_no, ntn_no, cell_no, cashier_name, counter_no, software_credit, return_policy
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                shaheer_id,
+                "AL-HAFIZ MEDICAL STORE",
+                "Shop#1, Block I-1, Mughal Market",
+                "DHO-ISB-1108",
+                "",
+                "0336-5677108",
+                "Uzair Kiyani",
+                "02",
+                "Software By Heath-Tech Cell # 0311-5505115",
+                "No Return or Exchange After 3 Days."
+            ))
+
         conn.commit()
 
 def get_store_info_dict(conn, user_id):
