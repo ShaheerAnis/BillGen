@@ -1,0 +1,2 @@
+# Python standard library modules used: sqlite3, http.server, hashlib, secrets, urllib, json
+# No external pip dependencies required for Bill Generator

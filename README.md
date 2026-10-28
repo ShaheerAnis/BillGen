@@ -1,56 +1,44 @@
-# SAIM Medical Store — POS Bill Generator & Thermal Receipt Suite
+# Bill Generator — POS & Thermal Receipt Suite
 
-A modern, responsive billing suite and thermal printer application featuring **dedicated Login & Sign-Up screens**, a local **SQLite Database (`pos_database.db`)** for persistent multi-user storage, and **company profile memory**.
-
----
-
-## Architecture & Storage
-
-### 💾 SQLite Database (`pos_database.db`)
-All data is stored locally in SQLite with normalized relational tables:
-1. **`users`**:
-   - `id` (INTEGER PRIMARY KEY)
-   - `username` (TEXT UNIQUE)
-   - `password_hash` (Salted SHA-256 hash)
-   - `created_at` (TIMESTAMP)
-2. **`sessions`**:
-   - `token` (TEXT PRIMARY KEY)
-   - `user_id` (INTEGER REFERENCES users)
-   - `created_at` (TIMESTAMP)
-3. **`store_profiles`**:
-   - `id` (INTEGER PRIMARY KEY)
-   - `user_id` (INTEGER UNIQUE REFERENCES users)
-   - `store_name`, `address`, `dsl_no`, `ntn_no`, `cell_no`, `cashier_name`, `counter_no`, `software_credit`, `return_policy`
-   - `updated_at` (TIMESTAMP)
-   *(Enforces a 1:1 relation per user — updating any company field immediately overwrites with the latest version).*
-4. **`bills`**:
-   - `id` (INTEGER PRIMARY KEY)
-   - `user_id` (INTEGER REFERENCES users)
-   - `bill_no`, `payment_id`, `bill_date`, `items_count`, `gross_total`, `bill_state_json`
-   - `created_at` (TIMESTAMP)
+A modern, responsive billing suite and thermal printer application featuring **dedicated Login & Sign-Up screens**, an **SQLite Database** for persistent multi-user storage, **company profile memory**, and **one-click Vercel deployment**.
 
 ---
 
-## Features
+## 🚀 Deploying to Vercel
 
-- **Dedicated Login & Sign-Up Screen**:
-  - Full-page authentication gateway before entering the POS billing dashboard.
-  - **Sign In Tab**: Fast login with username and password, with pre-configured 1-click demo logins.
-  - **Create Account (Sign Up) Tab**: Form to register a store with Company Name, Address, Contact Cell #, DSL #, NTN #, and Cashier Name.
-  - Clean **Sign Out** button in dashboard header to terminate session.
-- **Persistent Company Information ("Only Latest Saved")**:
-  - Edits to store name, address, contact, or license are auto-saved to SQLite with debouncing.
-  - Next time that user logs in, their latest company details appear on the screen and on the thermal receipt.
-- **Independent Bill Generation**:
-  - **"➕ New Bill"**: Prepares a fresh bill while preserving the user's saved store info.
-  - Scoped bill history saved directly into SQLite.
-- **80mm Thermal Receipt Preview & Printing**:
-  - Exact layout match for 80mm roll POS printers.
-  - Print media stylesheets (`@media print`) hide controls and isolate the receipt.
+This repository is pre-configured for **Vercel** with zero setup required:
+
+### Method 1: Import via Vercel Dashboard (Easiest)
+1. Go to [vercel.com/new](https://vercel.com/new).
+2. Connect your GitHub account and select this repository (**`ShaheerAnis/BillGen`**).
+3. Leave all build settings as default (Framework Preset: **Other**; Root Directory: **`./`**).
+4. Click **Deploy**. Vercel will build and launch your live site in seconds!
+
+### Method 2: Deploy using Vercel CLI
+```bash
+npm i -g vercel
+vercel
+```
+
+### ⚙️ How Vercel Setup Works:
+- **`vercel.json`**: Automatically routes `/api/*` requests to the Python serverless function at `api/index.py`, while serving `index.html`, `style.css`, and `app.js` directly via Vercel's global CDN.
+- **Serverless SQLite (`/tmp/pos_database.db`)**: Automatically initializes and seeds the database in Vercel's serverless environment, coupled with client-side session caching so user credentials and bills remain seamless.
+- **`requirements.txt`**: Standard library only — builds in ~2 seconds with no heavy dependencies.
 
 ---
 
-## Running the Project
+## 💾 Architecture & Storage
+
+### SQLite Database
+All data is stored in normalized relational tables:
+1. **`users`**: User credentials and salted SHA-256 password hashes.
+2. **`sessions`**: Active authentication tokens.
+3. **`store_profiles`**: 1:1 user store information (Company Name, Address, Cell #, DSL #, Cashier Name, Counter #, Return Policy). Updates overwrite with the latest version.
+4. **`bills`**: Stored receipts and line items per user.
+
+---
+
+## 💻 Running Locally
 
 ```bash
 python3 server.py 3000

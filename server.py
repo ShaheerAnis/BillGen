@@ -16,7 +16,10 @@ from datetime import datetime
 
 PORT = 3000
 DIRECTORY = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(DIRECTORY, "pos_database.db")
+if os.environ.get("VERCEL"):
+    DB_PATH = "/tmp/pos_database.db"
+else:
+    DB_PATH = os.path.join(DIRECTORY, "pos_database.db")
 
 # =========================================================================
 # SQLite Database Layer

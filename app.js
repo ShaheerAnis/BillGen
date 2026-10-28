@@ -274,6 +274,7 @@ async function handleLogout() {
     authToken = null;
     currentUser = null;
     localStorage.removeItem("pos_auth_token");
+    localStorage.removeItem("pos_cached_user");
     showAuthScreen();
     showToast("Signed out successfully", "info");
   }
@@ -281,6 +282,7 @@ async function handleLogout() {
 
 function applyUserSession(user) {
   currentUser = user;
+  localStorage.setItem("pos_cached_user", JSON.stringify(user));
   const store = user.storeInfo || {};
 
   // Hydrate state with user's stored SQLite details
@@ -983,9 +985,21 @@ async function initApp() {
       applyUserSession(data.user);
       return;
     } catch (e) {
-      console.warn("Session expired or invalid, please sign in.");
+      console.warn("Server check failed, checking cached session...", e);
+      const cached = localStorage.getItem("pos_cached_user");
+      if (cached) {
+        try {
+          const cachedUser = JSON.parse(cached);
+          applyUserSession(cachedUser);
+          if (cachedUser.storeInfo) {
+            api.saveStoreProfile(cachedUser.storeInfo).catch(() => {});
+          }
+          return;
+        } catch (err) {}
+      }
       authToken = null;
       localStorage.removeItem("pos_auth_token");
+      localStorage.removeItem("pos_cached_user");
     }
   }
 
