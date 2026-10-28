@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bill Generator - POS & Thermal Receipt Suite</title>
+  <meta name="description"
+    content="Professional thermal receipt generator and point of sale billing suite backed by SQLite database.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- ================= DEDICATED AUTHENTICATION SCREEN ================= -->
+  <div id="authScreen" class="auth-page-wrapper">
+    <div class="auth-container">
+
+      <!-- Interactive Login / Signup Form -->
+      <div class="auth-form-card">
+        
+        <!-- App Title Header -->
+        <div class="auth-header-brand">
+          <div class="brand-icon lg">🧾</div>
+          <div>
+            <h1 class="auth-brand-title">Bill Generator</h1>
+            <p class="auth-brand-subtitle">Point of Sale & Thermal Receipt Suite</p>
+          </div>
+        </div>
+
+        <!-- Switch Tabs -->
+        <div class="auth-card-tabs">
+          <button type="button" class="auth-tab-link active" id="tabLoginLink">
+            🔐 Sign In
+          </button>
+          <button type="button" class="auth-tab-link" id="tabSignupLink">
+            ✨ Create Account (Sign Up)
+          </button>
+        </div>
+
+        <!-- Alert Notification Box -->
+        <div id="authAlertBox" class="auth-alert-box" style="display: none;"></div>
+
+        <!-- 1. SIGN IN FORM -->
+        <div id="signInSection" class="auth-section active">
+          <div class="auth-form-header">
+            <h2>Welcome Back</h2>
+            <p>Log in with your store account to generate receipts.</p>
+          </div>
+
+          <form id="formSignIn" onsubmit="return false;" class="auth-form">
+            <div class="form-group">
+              <label class="form-label" for="loginUser">Username</label>
+              <div class="input-icon-wrapper">
+                <span class="input-icon">👤</span>
+                <input type="text" id="loginUser" class="form-input with-icon" placeholder="e.g. saim" required
+                  autocomplete="username">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="loginPass">Password</label>
+              <div class="input-icon-wrapper">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="loginPass" class="form-input with-icon"
+                  placeholder="Enter password (e.g. 123)" required autocomplete="current-password">
+              </div>
+            </div>
+
+            <button type="submit" id="btnSubmitLogin" class="btn btn-primary btn-auth-submit">
+              Sign In to POS Dashboard ➔
+            </button>
+          </form>
+
+          <!-- Quick Test Demo Accounts Box -->
+          <div class="auth-demo-box">
+            <span class="demo-box-label">⚡ Fast 1-Click Demo Logins (Stored in SQLite):</span>
+            <div class="demo-chips-grid">
+              <button type="button" class="auth-demo-chip" data-user="saim" data-pass="123">
+                🏢 <strong>SAIM Medical Store</strong> (Shaheer)
+              </button>
+              <button type="button" class="auth-demo-chip" data-user="alshifa" data-pass="123">
+                🏥 <strong>Al-Shifa Pharmacy</strong> (Dr. Tariq)
+              </button>
+            </div>
+          </div>
+
+          <div class="auth-footer-prompt">
+            Don't have an account yet?
+            <button type="button" class="link-btn" id="linkToSignup">Create Store Account</button>
+          </div>
+        </div>
+
+        <!-- 2. SIGN UP FORM -->
+        <div id="signUpSection" class="auth-section">
+          <div class="auth-form-header">
+            <h2>Create Store Account</h2>
+            <p>Your company info will be stored in SQLite and appear on your receipts.</p>
+          </div>
+
+          <form id="formSignUp" onsubmit="return false;" class="auth-form">
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label" for="regUser">Username *</label>
+                <input type="text" id="regUser" class="form-input" placeholder="e.g. prime_medics" required
+                  autocomplete="username">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="regPass">Password *</label>
+                <input type="password" id="regPass" class="form-input" placeholder="Create password" required
+                  autocomplete="new-password">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="regStore">Store / Company Name *</label>
+              <input type="text" id="regStore" class="form-input" placeholder="e.g. PRIME MEDICOS & GENERAL STORE"
+                required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="regAddr">Store Address / Location *</label>
+              <input type="text" id="regAddr" class="form-input" placeholder="e.g. Bilal Town, Kakul Road, Abbottabad"
+                required>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label" for="regCashierName">Cashier / Owner Name</label>
+                <input type="text" id="regCashierName" class="form-input" placeholder="e.g. Shaheer">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="regPhone">Contact Cell #</label>
+                <input type="text" id="regPhone" class="form-input" placeholder="e.g. 0336-5677108">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="regDslNo">Drug Sale License (DSL #)</label>
+              <input type="text" id="regDslNo" class="form-input" placeholder="e.g. AD/RS/296">
+            </div>
+
+            <button type="submit" id="btnSubmitSignup" class="btn btn-emerald btn-auth-submit">
+              ✨ Create Account in SQLite & Enter POS
+            </button>
+          </form>
+
+          <div class="auth-footer-prompt">
+            Already have an account?
+            <button type="button" class="link-btn" id="linkToLogin">Sign In Here</button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= MAIN POS BILLING APPLICATION ================= -->
+  <div id="posScreen" class="pos-screen-wrapper" style="display: none;">
+
+    <!-- Top Navigation Bar -->
+    <header class="app-header">
+      <div class="brand-section">
+        <div class="brand-icon">🧾</div>
+        <div>
+          <h1 class="brand-title">
+            <span id="headerBrandTitle">Bill Generator</span>
+            <span class="brand-badge" id="headerStoreBadge">SAIM MEDICAL STORE</span>
+          </h1>
+        </div>
+      </div>
+      <div class="header-actions">
+        <!-- Active User Profile Pill -->
+        <div class="user-pill" id="userPill" title="Logged in store account">
+          <span class="user-pill-avatar" id="userAvatar">👤</span>
+          <div class="user-pill-info">
+            <span class="user-pill-name" id="userPillName">Shaheer</span>
+            <span class="user-pill-store" id="userPillStore">SAIM MEDICAL STORE</span>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-sm" id="btnNewBill" title="Create a fresh new bill for this company">
+          ➕ New Bill
+        </button>
+        <button class="btn btn-emerald btn-sm" id="btnSaveBill" title="Save current bill into SQLite history">
+          💾 Save Bill
+        </button>
+        <button class="btn btn-ghost btn-sm" id="btnHistory" title="Saved Bills in SQLite">
+          📑 History (<span id="historyCount">0</span>)
+        </button>
+        <button class="btn btn-primary" id="btnPrintTop" title="Print 80mm Thermal Receipt (Ctrl+P)">
+          🖨️ Print Receipt
+        </button>
+        <button class="btn btn-ghost btn-sm" id="btnReactCode" title="View & copy React component code">
+          ⚛️ React
+        </button>
+        <button class="btn btn-danger-ghost btn-sm" id="btnLogout" title="Log out from this account">
+          🚪 Sign Out
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Application Layout -->
+    <main class="app-layout">
+
+      <!-- Left Column: POS Bill Editor Controls -->
+      <section class="editor-pane">
+
+        <!-- Card: Store & Bill Metadata -->
+        <div class="panel-card">
+          <div class="card-header">
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <span class="card-title">📋 Bill & Store Information</span>
+              <div class="auto-save-status" id="storeAutoSaveStatus" title="Store info is stored permanently in SQLite">
+                <span class="status-dot saved" id="storeStatusDot"></span>
+                <span id="storeStatusText" class="status-text">SQLite: Info saved</span>
+              </div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-ghost btn-sm" id="btnSaveStoreExplicit"
+                title="Manually save store information into SQLite">
+                💾 Save Info
+              </button>
+              <button class="btn btn-ghost btn-sm" id="btnSetNowTime" title="Set date to current timestamp">
+                ⏱️ Current Time
+              </button>
+            </div>
+          </div>
+          <div class="store-info-hint">
+            💾 <strong>SQLite Profile Active:</strong> Changes to company name, address, or contact details are saved to
+            SQLite and reload every time you log in. Only latest updates are stored.
+          </div>
+          <div class="form-grid-3">
+            <div class="form-group">
+              <label class="form-label" for="inputStoreName">Store / Company Name</label>
+              <input type="text" id="inputStoreName" class="form-input" value="SAIM MEDICAL STORE">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inputPaymentId">Bill Payment ID</label>
+              <input type="text" id="inputPaymentId" class="form-input form-input-mono" value="AD-142677">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inputBillNo">Bill #</label>
+              <input type="text" id="inputBillNo" class="form-input form-input-mono" value="86431">
+            </div>
+          </div>
+
+          <div class="form-grid-3" style="margin-top: 10px;">
+            <div class="form-group">
+              <label class="form-label" for="inputDate">Date & Time</label>
+              <input type="text" id="inputDate" class="form-input form-input-mono" value="16/03/2025 2:33:42 PM">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inputUser">Cashier / Operator</label>
+              <input type="text" id="inputUser" class="form-input" value="Shaheer">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inputCounter">Counter #</label>
+              <input type="text" id="inputCounter" class="form-input form-input-mono" value="01">
+            </div>
+          </div>
+
+          <!-- Collapsible Store Address & License Details -->
+          <details open style="margin-top: 12px; font-size: 12px; color: var(--text-muted);">
+            <summary style="cursor: pointer; user-select: none; font-weight: 600; padding: 4px 0;">
+              ⚙️ Store Address, Contact & License Details
+            </summary>
+            <div class="form-grid-2" style="margin-top: 10px;">
+              <div class="form-group">
+                <label class="form-label" for="inputAddress">Address / Location</label>
+                <input type="text" id="inputAddress" class="form-input" value="Bilal Town, Kakul Road, Abbottabad.">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="inputDslNo">DSL Number</label>
+                <input type="text" id="inputDslNo" class="form-input" value="AD/RS/296">
+              </div>
+            </div>
+            <div class="form-grid-2" style="margin-top: 8px;">
+              <div class="form-group">
+                <label class="form-label" for="inputCellNo">Contact Cell #</label>
+                <input type="text" id="inputCellNo" class="form-input" value="0336-5677108">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="inputSoftwareCredit">Software Credit / Footer</label>
+                <input type="text" id="inputSoftwareCredit" class="form-input"
+                  value="Software By Heath-Tech Cell # 0311-5505115">
+              </div>
+            </div>
+          </details>
+        </div>
+
+        <!-- Card: Bill Line Items -->
+        <div class="panel-card">
+          <div class="card-header">
+            <span class="card-title">💊 Medicines & Bill Items (<span id="itemCountDisplay">4</span>)</span>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-ghost btn-sm" id="btnClearItems" title="Clear all line items">
+                🗑️ Clear
+              </button>
+              <button class="btn btn-primary btn-sm" id="btnAddItem" title="Add a new line item">
+                ➕ Add Item
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Add Medicine Presets -->
+          <div class="presets-bar">
+            <span style="font-size: 11px; color: var(--text-dim); margin-right: 4px;">Quick Add:</span>
+            <button class="preset-chip" data-name="PANADOL EXTRA" data-price="4.50">+ Panadol Extra</button>
+            <button class="preset-chip" data-name="AUGMENTIN 625MG" data-price="34.80">+ Augmentin 625mg</button>
+            <button class="preset-chip" data-name="RISEK 20MG CAP" data-price="28.50">+ Risek 20mg</button>
+            <button class="preset-chip" data-name="BRUFEN 400MG" data-price="5.20">+ Brufen 400mg</button>
+            <button class="preset-chip" data-name="DISPRIN TAB" data-price="2.50">+ Disprin</button>
+            <button class="preset-chip" data-name="GETRYL 2MG" data-price="6.86">+ Getryl 2mg</button>
+            <button class="preset-chip" data-name="CONCOR 5MG" data-price="22.92">+ Concor 5mg</button>
+          </div>
+
+          <!-- Dynamic Items Table -->
+          <div class="items-table-wrapper">
+            <table class="items-table">
+              <thead>
+                <tr>
+                  <th style="width: 44%;">Item Description</th>
+                  <th style="width: 16%; text-align: center;">Qty</th>
+                  <th style="width: 20%; text-align: right;">Price (Rs.)</th>
+                  <th style="width: 14%; text-align: right;">Total</th>
+                  <th style="width: 6%; text-align: center;"></th>
+                </tr>
+              </thead>
+              <tbody id="itemsTableBody">
+                <!-- Rendered via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Card: Financial Calculations & Payment Tender -->
+        <div class="panel-card">
+          <div class="card-header">
+            <span class="card-title">💰 Payment & Totals</span>
+          </div>
+
+          <div class="summary-grid">
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div class="form-group">
+                <label class="form-label" for="inputDiscount">Discount (Rs.)</label>
+                <input type="number" id="inputDiscount" class="form-input form-input-mono" value="0.00" step="any"
+                  min="0">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="inputCashReceived">Cash Received (Rs.)</label>
+                <input type="number" id="inputCashReceived" class="form-input form-input-mono" value="12000.00"
+                  step="any" min="0">
+              </div>
+            </div>
+
+            <!-- Dynamic Output Breakdown -->
+            <div class="summary-card">
+              <div class="summary-row">
+                <span style="color: var(--text-muted);">Items Total:</span>
+                <span id="displaySubtotal" class="form-input-mono">11,895.72</span>
+              </div>
+              <div class="summary-row">
+                <span style="color: var(--text-muted);">Discount:</span>
+                <span id="displayDiscount" class="form-input-mono">0.00</span>
+              </div>
+              <div class="summary-row total-highlight">
+                <span>Gross / Net Total:</span>
+                <span id="displayGrossTotal">11,895.72</span>
+              </div>
+              <div class="summary-row balance-highlight"
+                style="margin-top: 6px; border-top: 1px dashed var(--border-subtle); padding-top: 6px;">
+                <span>Balance Change:</span>
+                <span id="displayBalance">104.28</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card: Return Policy & Footnotes -->
+        <div class="panel-card">
+          <div class="form-group">
+            <label class="form-label" for="inputPolicy">Return / Exchange Policy Notice</label>
+            <input type="text" id="inputPolicy" class="form-input"
+              value="No Return or Exchange After 3 Days. Fridge Items Cannot Be Returned or Exchanged.">
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Right Column: Live Thermal Receipt Preview Stage -->
+      <aside class="preview-pane">
+
+        <!-- Toolbar above thermal receipt -->
+        <div class="preview-toolbar">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
+              Live Thermal Paper Preview
+            </span>
+            <span class="brand-badge" style="font-size: 10px;">80mm Roll</span>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn btn-ghost btn-sm" id="btnZoomToggle" title="Toggle zoom for easy reading">
+              🔍 Zoom 125%
+            </button>
+            <button class="btn btn-primary btn-sm" id="btnPrintReceiptBtn" title="Send to thermal printer">
+              🖨️ Print
+            </button>
+          </div>
+        </div>
+
+        <!-- Realistic Thermal Viewport -->
+        <div class="preview-stage" id="previewStage">
+
+          <!-- Authentic Thermal Receipt -->
+          <div class="receipt-wrapper" id="printableReceipt">
+
+            <!-- Organic Pocket Fold & Crease Overlays -->
+            <div class="receipt-fold-overlay" aria-hidden="true">
+              <div class="receipt-crease crease-slant-1"></div>
+              <div class="receipt-crease crease-slant-2"></div>
+              <div class="receipt-crease crease-corner"></div>
+            </div>
+
+            <h2 class="receipt-header-title" id="receiptStoreName">SAIM MEDICAL STORE</h2>
+            <p class="receipt-meta" id="receiptAddress">Bilal Town, Kakul Road, Abbottabad.</p>
+            <p class="receipt-meta">
+              DSL NO: <span id="receiptDsl">AD/RS/296</span>
+            </p>
+            <p class="receipt-meta">Cell NO: <span id="receiptCell">0336-5677108</span></p>
+
+            <hr class="receipt-divider">
+
+            <!-- Black Sales Receipt Banner with Exact Print Preservation -->
+            <div class="receipt-badge-banner">
+              SALES RECEIPT
+            </div>
+
+            <div style="margin: 4px 0;">
+              <p class="receipt-info-row">
+                <strong>Bill Payment ID:</strong>
+                <span id="receiptPaymentId">AD-142677</span>
+              </p>
+              <p class="receipt-info-row">
+                <strong>Bill #:</strong>
+                <span id="receiptBillNo">86431</span>
+              </p>
+              <p class="receipt-info-row">
+                <strong>Date:</strong>
+                <span id="receiptDate">16/03/2025 2:33:42 PM</span>
+              </p>
+              <p class="receipt-info-row">
+                <span><strong>User:</strong> <span id="receiptUser">Shaheer</span></span>
+                <span><strong>Counter:</strong> <span id="receiptCounter">01</span></span>
+              </p>
+            </div>
+
+            <hr class="receipt-divider">
+
+            <!-- Medicines Table -->
+            <table class="receipt-table">
+              <thead>
+                <tr>
+                  <th style="width: 40%;">Item</th>
+                  <th class="text-center" style="width: 15%;">Qty</th>
+                  <th class="text-right" style="width: 20%;">Price</th>
+                  <th class="text-right" style="width: 25%;">Amount</th>
+                </tr>
+              </thead>
+              <tbody id="receiptItemsTbody">
+                <!-- Rendered via JS -->
+              </tbody>
+              <tfoot>
+                <tr style="border-top: 1px solid #000;">
+                  <td colspan="3" style="padding-top: 4px;">
+                    <strong>Total:&nbsp;&nbsp;</strong> <span id="receiptTotalItemsCount">4</span>
+                  </td>
+                  <td class="text-right" style="padding-top: 4px; font-weight: bold;" id="receiptSubtotal">
+                    11895.72
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <hr class="receipt-divider">
+
+            <!-- Summary / Tender Table -->
+            <table class="receipt-summary-table">
+              <tbody>
+                <tr>
+                  <td style="text-align: left;"><strong>Disc:</strong></td>
+                  <td class="text-right" id="receiptDiscount">0.00</td>
+                </tr>
+                <tr>
+                  <td style="text-align: left;"><strong>Gross Total:</strong></td>
+                  <td class="text-right" style="font-weight: bold; font-size: 13px;" id="receiptGrossTotal">11895.72
+                  </td>
+                </tr>
+                <tr>
+                  <td style="text-align: left;"><strong>Cash Received:</strong></td>
+                  <td class="text-right" id="receiptCashReceived">12000.00</td>
+                </tr>
+                <tr>
+                  <td style="text-align: left;"><strong>Balance:</strong></td>
+                  <td class="text-right" style="font-weight: bold;" id="receiptBalance">104.28</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <hr class="receipt-divider">
+
+            <!-- Disclaimers & Credits -->
+            <p class="receipt-footer-text" id="receiptPolicy">
+              No Return or Exchange After 3 Days. Fridge Items Cannot Be Returned or Exchanged.
+            </p>
+            <p class="receipt-footer-text" style="font-weight: bold;">
+              Thank You For Visiting Us.
+            </p>
+            <p class="receipt-footer-text" style="color: #333;" id="receiptSoftwareCredit">
+              Software By Heath-Tech Cell # 0311-5505115
+            </p>
+
+          </div>
+        </div>
+      </aside>
+
+    </main>
+  </div>
+
+  <!-- React Code Modal -->
+  <div class="modal-overlay" id="reactModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="font-size: 15px; font-weight: 700;">⚛️ React Component (`Receipt.jsx`)</h3>
+        <button class="btn btn-ghost btn-sm" id="btnCloseReactModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+          The component below was generated from your <code>saim.txt</code> source code and updated for React 18/19 and
+          <code>react-to-print</code>. You can copy it directly or reference <code>Receipt.jsx</code> in this directory:
+        </p>
+        <pre class="code-block" id="reactCodeDisplay"></pre>
+      </div>
+      <div
+        style="padding: 14px 20px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: flex-end; gap: 8px;">
+        <button class="btn btn-primary btn-sm" id="btnCopyReactCode">📋 Copy React Code</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Drawer Modal -->
+  <div class="modal-overlay" id="historyModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="font-size: 15px; font-weight: 700;">📑 Saved Bills in SQLite</h3>
+        <button class="btn btn-ghost btn-sm" id="btnCloseHistoryModal">✕</button>
+      </div>
+      <div class="modal-body" id="historyListContainer">
+        <!-- Rendered via JS -->
+      </div>
+      <div
+        style="padding: 14px 20px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between;">
+        <button class="btn btn-danger-ghost btn-sm" id="btnClearHistory">Clear All History</button>
+        <button class="btn btn-ghost btn-sm" id="btnCloseHistoryFooter">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>

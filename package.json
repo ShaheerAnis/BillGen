@@ -1,0 +1,19 @@
+{
+  "name": "bill-generator",
+  "version": "1.0.0",
+  "description": "Bill Generator - POS Thermal Receipt Generator & Billing Suite backed by SQLite",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 server.py 3000",
+    "serve": "python3 -m http.server 3000"
+  },
+  "keywords": [
+    "pos",
+    "receipt-generator",
+    "thermal-printer",
+    "pharmacy-billing",
+    "medical-store"
+  ],
+  "author": "Heath-Tech",
+  "license": "MIT"
+}

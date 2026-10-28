@@ -1,0 +1,129 @@
+import React, { useRef } from "react";
+import { useReactToPrint } from "react-to-print";
+
+const Receipt = React.forwardRef(({ items, total, discount, netTotal }, ref) => {
+  return (
+    <div ref={ref} style={{ width: "300px", padding: "10px", border: "1px solid black", textAlign: "left" }}>
+      <h2 style={{ textAlign: "center" }}>SAIM MEDICAL STORE</h2>
+      <p style={{ textAlign: "center", margin: "5px 0" }}>Bilal Town, Kakul Road, Abbottabad.</p>
+      <p style={{ textAlign: "center", margin: "5px 0" }}>DSL NO: AD/RS/296 &nbsp;&nbsp; NTN NO: 3930432</p>
+      <p style={{ textAlign: "center", margin: "5px 0" }}>Cell NO: 0336-5677108</p>
+      <hr />
+      {/* Sales Receipt Banner */}
+      <div style={{ backgroundColor: "black", color: "white",
+         textAlign: "center", printColorAdjust: "exact", 
+         WebkitPrintColorAdjust: "exact",
+         padding: "5px", marginTop: "5px", fontWeight: "bold" }}>
+        SALES RECEIPT
+      </div>
+      <p><strong>Bill Payment ID:</strong> AD-142677</p>
+      <p><strong>Bill #:</strong> 86431</p>
+      <p><strong>Date:</strong> 16/03/2025 2:33:42 PM</p>
+      <p><strong>User:</strong> Shaheer &nbsp;&nbsp; <strong>Counter:</strong> 01</p>
+      <hr />
+      <table style={{ width: "100%", textAlign: "left", borderCollapse: "collapse" }}>
+        <thead>
+        <tr>
+            <th style={{ textAlign: "left", width: "40%" }}>Item</th>
+            <th style={{ textAlign: "center", width: "15%" }}>Qty</th>
+            <th style={{ textAlign: "right", width: "20%" }}>Price</th>
+            <th style={{ textAlign: "right", width: "25%" }}>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map((item, index) => (
+            <tr key={index}>
+              <td>{item.name}</td>
+              <td style={{ textAlign: "center" }}>{item.quantity}</td>
+              <td style={{ textAlign: "right" }}>{item.price.toFixed(2)}</td>
+              <td style={{ textAlign: "right" }}>{item.total.toFixed(2)}</td>
+            </tr>
+          ))}
+          {/* Total Items Row Below the Items */}
+          <tr>
+            <td><p><strong>Total:&nbsp;&nbsp;</strong> 4</p></td>
+            <td>
+            </td>
+            <td></td>
+            <td style={{ textAlign: "right" }}>{total.toFixed(2)}</td>
+          </tr>
+        </tbody>
+      </table>
+      <hr />
+      {/* Summary Table with Right Alignment Under Amount */}
+      <table style={{ width: "100%", textAlign: "right", borderCollapse: "collapse" }}>
+        <tbody>
+          <tr>
+            <td style={{ textAlign: "left" }}><strong>Disc:</strong></td>
+            <td>0.00</td>
+          </tr>
+          <tr>
+            <td style={{ textAlign: "left" }}><strong>Gross Total:</strong></td>
+            <td><strong>{netTotal.toFixed(2)}</strong></td>
+          </tr>
+          <tr>
+            <td style={{ textAlign: "left" }}><strong>Cash Received:</strong></td>
+            <td>12000.00</td>
+          </tr>
+          <tr>
+            <td style={{ textAlign: "left" }}><strong>Balance:</strong></td>
+            <td>105.00</td>
+          </tr>
+        </tbody>
+      </table>
+      <hr />
+      <p style={{ textAlign: "center", fontSize: "12px" }}>
+        No Return or Exchange After 3 Days. Fridge Items Cannot Be Returned or Exchanged.
+      </p>
+      <p style={{ textAlign: "center", fontSize: "12px" }}>Thank You For Visiting Us.</p>
+      <p style={{ textAlign: "center", fontSize: "12px" }}>Software By Heath-Tech Cell # 0311-5505115</p>
+    </div>
+  );
+});
+
+const PrintButton = ({ receiptRef }) => {
+  const handlePrint = useReactToPrint({
+    content: () => receiptRef.current,
+    documentTitle: "Pharmacy Receipt",
+  });
+
+  return (
+    <button
+      style={{
+        width: "100%",
+        padding: "10px",
+        marginTop: "10px",
+        backgroundColor: "#007bff",
+        color: "white",
+        border: "none",
+        cursor: "pointer",
+      }}
+      onClick={handlePrint}
+    >
+      Print Receipt
+    </button>
+  );
+};
+
+const ReceiptPage = () => {
+  const receiptRef = useRef();
+
+  const items = [
+    { name: "GETRYL 2MG", quantity: 30, price: 6.86, total: 205.96 },
+    { name: "CONCOR 5MG", quantity: 28, price: 22.92, total: 641.76},
+    { name: "XENGLU-MET 12.5/500MG", quantity: 28, price: 32.14, total: 900 },
+    { name: "XULTOPHY (100/3.6) INJ 3ML", quantity: 1, price: 10148, total: 10148},
+  ];
+  const total = items.reduce((acc, item) => acc + item.total, 0);
+  const discount = 0;
+  const netTotal = total - discount;
+
+  return (
+    <div style={{ textAlign: "center", padding: "20px" }}>
+      <Receipt ref={receiptRef} items={items} total={total} discount={discount} netTotal={netTotal} />
+      <PrintButton receiptRef={receiptRef} />
+    </div>
+  );
+};
+
+export default ReceiptPage;
